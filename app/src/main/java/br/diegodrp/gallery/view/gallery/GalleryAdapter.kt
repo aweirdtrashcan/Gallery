@@ -2,6 +2,7 @@ package br.diegodrp.gallery.view.gallery
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -50,6 +51,9 @@ class GalleryAdapter: ListAdapter<Image, GalleryAdapter.GalleryViewHolder>(Galle
         position: Int
     ) {
         val image = getItem(position)
-        holder.imageBinding.imageView.setImageURI(image.contentUri)
+
+        holder.imageBinding.imageView.apply {
+            setImageURI(image.contentUri)
+        }
     }
 }

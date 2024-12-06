@@ -36,9 +36,7 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
     override fun onStart() {
         super.onStart()
 
-        adapter = GalleryAdapter()
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
+        setupRecyclerView()
 
         val activity = requireActivity() as? MainActivity
 
@@ -52,6 +50,13 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
         }
 
         collectState()
+    }
+
+    private fun setupRecyclerView() {
+        adapter = GalleryAdapter()
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
+        binding.recyclerView.addItemDecoration(GalleryItemDecoration(16))
     }
 
     private fun collectState() {
