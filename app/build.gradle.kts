@@ -53,5 +53,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.koin.android)
+    implementation(libs.glide)
 
 }

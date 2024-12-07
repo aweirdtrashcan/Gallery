@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import br.diegodrp.gallery.databinding.ItemImageBinding
 import br.diegodrp.gallery.model.Image
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 
 class GalleryAdapter: ListAdapter<Image, GalleryAdapter.GalleryViewHolder>(GalleryDiffUtil()) {
 
@@ -52,8 +55,13 @@ class GalleryAdapter: ListAdapter<Image, GalleryAdapter.GalleryViewHolder>(Galle
     ) {
         val image = getItem(position)
 
-        holder.imageBinding.imageView.apply {
-            setImageURI(image.contentUri)
-        }
+        val requestOptions = RequestOptions()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .override(300, 300)
+
+        Glide.with(holder.imageBinding.imageView)
+            .load(image.contentUri)
+            .apply(requestOptions)
+            .into(holder.imageBinding.imageView)
     }
 }

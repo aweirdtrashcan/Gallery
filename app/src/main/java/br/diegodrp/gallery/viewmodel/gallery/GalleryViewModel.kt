@@ -26,6 +26,12 @@ class GalleryViewModel: ViewModel() {
                     areAllPermissionsGranted = true
                 )
             }
+
+            is GalleryEvent.OnGalleryImagesLoaded -> {
+                _state.value = _state.value.copy(
+                    images = event.images
+                )
+            }
         }
     }
 }

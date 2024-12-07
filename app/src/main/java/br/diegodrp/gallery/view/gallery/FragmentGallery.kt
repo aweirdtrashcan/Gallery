@@ -56,13 +56,14 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
         adapter = GalleryAdapter()
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
-        binding.recyclerView.addItemDecoration(GalleryItemDecoration(16))
+        binding.recyclerView.addItemDecoration(GalleryItemDecoration(8))
     }
 
     private fun collectState() {
         lifecycleScope.launch(Dispatchers.IO) {
             vm.state.collect { state ->
-                handlePermissions(state.areAllPermissionsGranted)
+                loadImagesFromStorage(state.areAllPermissionsGranted)
+                loadImagesToRecyclerView(state.images)
             }
         }
     }
@@ -76,12 +77,16 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
         )
     }
 
-    private suspend fun handlePermissions(areGranted: Boolean) {
+    private suspend fun loadImagesToRecyclerView(images: List<Image>) {
+        withContext(Dispatchers.Main) {
+            adapter.submitList(images)
+        }
+    }
+
+    private fun loadImagesFromStorage(areGranted: Boolean) {
         if (areGranted) {
             val images = loadImagesFromExternalStorage()
-            withContext(Dispatchers.Main) {
-                adapter.submitList(images)
-            }
+            vm.onEvent(GalleryEvent.OnGalleryImagesLoaded(images))
         }
     }
 
