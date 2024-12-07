@@ -31,12 +31,12 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentGalleryBinding.bind(view)
+
+        setupRecyclerView()
     }
 
     override fun onStart() {
         super.onStart()
-
-        setupRecyclerView()
 
         val activity = requireActivity() as? MainActivity
 
