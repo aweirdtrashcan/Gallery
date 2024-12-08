@@ -1,0 +1,17 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Gallery" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.Gallery" parent="Base.Theme.Gallery" />
+
+    <style name="scroll_bar">
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:scrollbarThumbVertical">@drawable/thumb</item>
+        <item name="android:verticalScrollbarPosition">right</item>
+        <item name="android:fadeScrollbars">true</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+    </style>
+</resources>

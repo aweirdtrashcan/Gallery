@@ -23,7 +23,7 @@ import kotlin.collections.iterator
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val onPermissionRequestedCallbacks = mutableListOf<OnPermissionRequestedCallback>()
+    private val onPermissionRequestedCallbacks = mutableListOf<OnPermissionRequestedCallback?>()
 
     private val requestPermissionActivity = registerForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
@@ -85,7 +85,10 @@ class MainActivity : AppCompatActivity() {
                 val permission = iterator.next()
                 if (isPermissionGranted(permission)) {
                     iterator.remove()
-                } else if (!isPermissionGranted(permission) && shouldShowRequestPermissionRationale(permission)) {
+                } else if (!isPermissionGranted(permission) && shouldShowRequestPermissionRationale(
+                        permission
+                    )
+                ) {
                     withContext(Dispatchers.Main) {
                         permissionDialog(
                             permission = PermissionFinder.findPermission(permission),
@@ -110,20 +113,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun registerOnPermissionRequested(
-        onPermissionRequested: OnPermissionRequestedCallback
+        onPermissionRequested: OnPermissionRequestedCallback?
     ) {
         onPermissionRequestedCallbacks.add(onPermissionRequested)
     }
 
-    fun removeOnPermissionRequested(
-        onPermissionRequested: OnPermissionRequestedCallback
+    fun unregisterOnPermissionRequested(
+        onPermissionRequested: OnPermissionRequestedCallback?
     ) {
         onPermissionRequestedCallbacks.remove(onPermissionRequested)
     }
 
     private fun callPermissionRequestedCallback(permission: String, isGranted: Boolean) {
         for (callback in onPermissionRequestedCallbacks) {
-            callback.onPermissionRequested(permission, isGranted)
+            callback?.onPermissionRequested(permission, isGranted)
         }
     }
 

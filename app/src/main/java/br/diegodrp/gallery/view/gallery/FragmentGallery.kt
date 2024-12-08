@@ -18,6 +18,8 @@ import br.diegodrp.gallery.permission.OnPermissionRequestedCallback
 import br.diegodrp.gallery.view.main.MainActivity
 import br.diegodrp.gallery.viewmodel.gallery.GalleryEvent
 import br.diegodrp.gallery.viewmodel.gallery.GalleryViewModel
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,6 +45,26 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
         }
 
         setupRecyclerView()
+        listenToolbarCollapseState()
+    }
+
+    private fun listenToolbarCollapseState() {
+        binding.appBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            appBarLayout?.let { appBarLayout
+                val isCollapsed = appBarLayout.totalScrollRange == -verticalOffset
+                setShouldShowScrollBar(isCollapsed)
+            }
+        }
+    }
+
+    private fun setShouldShowScrollBar(shouldShow: Boolean) {
+        binding.recyclerView.isVerticalScrollBarEnabled = shouldShow
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val activity = requireActivity() as? MainActivity
+        activity?.unregisterOnPermissionRequested(this)
     }
 
     private fun setupRecyclerView() {
@@ -85,7 +107,22 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
 
     private suspend fun loadImagesToRecyclerView(images: List<Image>) {
         withContext(Dispatchers.Main) {
+            setToolbarDynamicTitle(images)
             adapter.submitList(images)
+        }
+    }
+
+    private fun setToolbarDynamicTitle(images: List<Image>) {
+        if (images.isNotEmpty()) {
+            val requestOptions = RequestOptions()
+                .override(300, 300)
+            Glide.with(requireContext())
+                .load(images[0].contentUri)
+                .apply(requestOptions)
+                .into(binding.ivFirstImage)
+
+            val title = "Showing ${images.size} images"
+            binding.toolbar.setTitle(title)
         }
     }
 

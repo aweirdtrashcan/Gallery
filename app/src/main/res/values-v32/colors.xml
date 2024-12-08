@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="thumb_color">@color/material_dynamic_primary70</color>
+    <color name="thumb_arrow_color">@color/material_dynamic_secondary90</color>
+</resources>
