@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import br.diegodrp.gallery.R
@@ -32,12 +34,25 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
 
         binding = FragmentGalleryBinding.bind(view)
 
+        askPermissions()
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                collectState()
+            }
+        }
+
         setupRecyclerView()
     }
 
-    override fun onStart() {
-        super.onStart()
+    private fun setupRecyclerView() {
+        adapter = GalleryAdapter()
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
+        binding.recyclerView.addItemDecoration(GalleryItemDecoration(8))
+    }
 
+    private fun askPermissions() {
         val activity = requireActivity() as? MainActivity
 
         activity?.let {
@@ -48,15 +63,6 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
                 activity.requestStoragePermissions()
             }
         }
-
-        collectState()
-    }
-
-    private fun setupRecyclerView() {
-        adapter = GalleryAdapter()
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
-        binding.recyclerView.addItemDecoration(GalleryItemDecoration(8))
     }
 
     private fun collectState() {
