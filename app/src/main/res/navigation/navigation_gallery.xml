@@ -7,5 +7,21 @@
     <fragment
         android:id="@+id/fragmentGallery"
         android:name="br.diegodrp.gallery.view.gallery.FragmentGallery"
-        android:label="FragmentGallery" />
+        android:label="FragmentGallery">
+        <action
+            android:id="@+id/action_fragmentGallery_to_fragmentImage"
+            app:destination="@id/fragmentImage" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentImage"
+        android:name="br.diegodrp.gallery.view.image.FragmentImage"
+        android:label="FragmentImage">
+
+        <argument
+            android:name="image_id"
+            android:defaultValue="-1"
+            app:argType="integer"
+            app:nullable="false" />
+
+    </fragment>
 </navigation>

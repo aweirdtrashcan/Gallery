@@ -32,6 +32,14 @@ class GalleryViewModel: ViewModel() {
                     images = event.images
                 )
             }
+
+            is GalleryEvent.OnAppBarCollapseChanged -> {
+                if (_state.value.isAppBarCollapsed != event.collapsed) {
+                    _state.value = _state.value.copy(
+                        isAppBarCollapsed = event.collapsed
+                    )
+                }
+            }
         }
     }
 }

@@ -3,15 +3,18 @@ package br.diegodrp.gallery.view.gallery
 import android.content.ContentUris
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import android.provider.MediaStore
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import br.diegodrp.gallery.R
+import br.diegodrp.gallery.databinding.BottomSheetImageInfoBinding
 import br.diegodrp.gallery.databinding.FragmentGalleryBinding
 import br.diegodrp.gallery.model.Image
 import br.diegodrp.gallery.permission.OnPermissionRequestedCallback
@@ -20,16 +23,18 @@ import br.diegodrp.gallery.viewmodel.gallery.GalleryEvent
 import br.diegodrp.gallery.viewmodel.gallery.GalleryViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.android.ext.android.inject
 
 class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequestedCallback {
 
     private lateinit var binding: FragmentGalleryBinding
-    private val vm by viewModel<GalleryViewModel>()
+    private val vm by inject<GalleryViewModel>()
     private lateinit var adapter: GalleryAdapter
+    private var recyclerViewState: Parcelable? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,17 +53,20 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
         listenToolbarCollapseState()
     }
 
-    private fun listenToolbarCollapseState() {
-        binding.appBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
-            appBarLayout?.let { appBarLayout
-                val isCollapsed = appBarLayout.totalScrollRange == -verticalOffset
-                setShouldShowScrollBar(isCollapsed)
-            }
+    override fun onDestroyView() {
+        super.onDestroyView()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (recyclerViewState != null) {
+            binding.recyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
         }
     }
 
-    private fun setShouldShowScrollBar(shouldShow: Boolean) {
-        binding.recyclerView.isVerticalScrollBarEnabled = shouldShow
+    override fun onPause() {
+        super.onPause()
+        recyclerViewState = binding.recyclerView.layoutManager?.onSaveInstanceState()
     }
 
     override fun onDestroy() {
@@ -67,11 +75,45 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
         activity?.unregisterOnPermissionRequested(this)
     }
 
+    private fun listenToolbarCollapseState() {
+        binding.appBarLayout.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            appBarLayout?.let {
+                appBarLayout
+                val isCollapsed = appBarLayout.totalScrollRange == -verticalOffset
+                vm.onEvent(GalleryEvent.OnAppBarCollapseChanged(isCollapsed))
+            }
+        }
+        binding.appBarLayout.setExpanded(!vm.state.value.isAppBarCollapsed)
+    }
+
+    private fun setShouldShowScrollBar(shouldShow: Boolean) {
+        binding.recyclerView.isVerticalScrollBarEnabled = shouldShow
+    }
+
     private fun setupRecyclerView() {
-        adapter = GalleryAdapter()
+        if (!this::adapter.isInitialized) {
+            adapter = GalleryAdapter(
+                onLongClick = {
+                    showImageBottomSheetDialog(image = it)
+                },
+                onClick = {
+                    onImageClicked(image = it)
+                }
+            )
+            adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        }
+
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
         binding.recyclerView.addItemDecoration(GalleryItemDecoration(8))
+    }
+
+    private fun onImageClicked(image: Image) {
+        val navArgs = FragmentGalleryDirections.actionFragmentGalleryToFragmentImage(
+            imageId = image.id.toInt()
+        )
+
+        findNavController().navigate(navArgs)
     }
 
     private fun askPermissions() {
@@ -92,6 +134,9 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
             vm.state.collect { state ->
                 loadImagesFromStorage(state.areAllPermissionsGranted)
                 loadImagesToRecyclerView(state.images)
+                withContext(Dispatchers.Main) {
+                    setShouldShowScrollBar(state.isAppBarCollapsed)
+                }
             }
         }
     }
@@ -147,11 +192,14 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
                 MediaStore.Images.Media.WIDTH,
                 MediaStore.Images.Media.HEIGHT,
                 MediaStore.Images.Media.SIZE,
+                MediaStore.Images.Media.MIME_TYPE,
+                MediaStore.Images.Media.DATE_ADDED,
+                MediaStore.Images.Media.DATE_MODIFIED
             )
 
             val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
 
-            val images = mutableListOf<Image>()
+            var images = mutableListOf<Image>()
 
             requireContext().contentResolver.query(
                 imagesUri,
@@ -165,6 +213,11 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
                 val widthColumn = cursor.getColumnIndex(MediaStore.Images.Media.WIDTH)
                 val heightColumn = cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT)
                 val sizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE)
+                val mimeColumn = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE)
+                val dateAddedColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED)
+                val dateModColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED)
+
+                images = ArrayList<Image>(cursor.count)
 
                 while (cursor.moveToNext()) {
                     val id = cursor.getLong(idColumn)
@@ -172,6 +225,9 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
                     val width = cursor.getInt(widthColumn)
                     val height = cursor.getInt(heightColumn)
                     val size = cursor.getInt(sizeColumn)
+                    val mime = cursor.getString(mimeColumn)
+                    val dateAdded = cursor.getLong(dateAddedColumn)
+                    val dateMod = cursor.getLong(dateModColumn)
 
                     val contentUri = ContentUris.withAppendedId(
                         imagesUri,
@@ -185,15 +241,37 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
                             width = width,
                             height = height,
                             size = size,
-                            contentUri = contentUri
+                            contentUri = contentUri,
+                            mime = mime,
+                            dateAdded = dateAdded,
+                            dateModified = dateMod
                         )
                     )
                 }
             }
+
             images
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
         }
+    }
+
+    private fun showImageBottomSheetDialog(image: Image) {
+        val bottomSheetDialog = BottomSheetDialog(requireContext())
+        val bottomSheetView = BottomSheetImageInfoBinding.inflate(layoutInflater)
+
+        val locale = resources.configuration.locales[0]
+
+        val title = String.format(locale, "Image name: %s", image.displayName)
+        val mediaType = String.format(locale, "Media Type: %s", image.mime)
+        val mediaResolution = String.format(locale, "Resolution: %dx%d", image.width, image.height)
+
+        bottomSheetView.tvMediaTitle.text = title
+        bottomSheetView.tvMediaType.text = mediaType
+        bottomSheetView.tvMediaResolution.text = mediaResolution
+
+        bottomSheetDialog.setContentView(bottomSheetView.root)
+        bottomSheetDialog.show()
     }
 }
