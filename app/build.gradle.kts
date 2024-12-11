@@ -54,5 +54,5 @@ dependencies {
 
     implementation(libs.koin.android)
     implementation(libs.glide)
-
+    implementation(libs.androidx.recyclerview)
 }

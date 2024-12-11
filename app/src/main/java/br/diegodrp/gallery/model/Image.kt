@@ -8,5 +8,8 @@ data class Image(
     val width: Int,
     val height: Int,
     val size: Int,
-    val contentUri: Uri
+    val contentUri: Uri,
+    val mime: String,
+    val dateAdded: Long,
+    val dateModified: Long
 )

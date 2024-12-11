@@ -12,7 +12,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 
-class GalleryAdapter: ListAdapter<Image, GalleryAdapter.GalleryViewHolder>(GalleryDiffUtil()) {
+class GalleryAdapter(
+    private val onLongClick: (Image) -> Unit,
+    private val onClick: (Image) -> Unit
+): ListAdapter<Image, GalleryAdapter.GalleryViewHolder>(GalleryDiffUtil()) {
 
     inner class GalleryViewHolder(
         val imageBinding: ItemImageBinding
@@ -63,5 +66,8 @@ class GalleryAdapter: ListAdapter<Image, GalleryAdapter.GalleryViewHolder>(Galle
             .load(image.contentUri)
             .apply(requestOptions)
             .into(holder.imageBinding.imageView)
+
+        holder.imageBinding.imageView.setOnLongClickListener { onLongClick(image); true }
+        holder.imageBinding.imageView.setOnClickListener { onClick(image) }
     }
 }

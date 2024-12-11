@@ -7,4 +7,5 @@ sealed class GalleryEvent {
         GalleryEvent()
     data object OnPermissionsAllowed: GalleryEvent()
     data class OnGalleryImagesLoaded(val images: List<Image>): GalleryEvent()
+    data class OnAppBarCollapseChanged(val collapsed: Boolean): GalleryEvent()
 }
