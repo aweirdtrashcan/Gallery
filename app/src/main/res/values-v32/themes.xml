@@ -11,7 +11,7 @@
         <item name="android:scrollbars">vertical</item>
         <item name="android:scrollbarThumbVertical">@drawable/thumb</item>
         <item name="android:verticalScrollbarPosition">right</item>
-        <item name="android:fadeScrollbars">true</item>
+        <item name="android:fadeScrollbars">false</item>
         <item name="android:scrollbarStyle">outsideOverlay</item>
     </style>
 </resources>
