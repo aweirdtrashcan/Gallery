@@ -1,5 +1,6 @@
 package br.diegodrp.gallery.model
 
+import android.graphics.Bitmap
 import android.net.Uri
 
 data class Image(

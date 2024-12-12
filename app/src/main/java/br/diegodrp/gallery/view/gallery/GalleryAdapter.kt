@@ -2,12 +2,11 @@ package br.diegodrp.gallery.view.gallery
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import br.diegodrp.gallery.databinding.ItemImageBinding
+import br.diegodrp.gallery.databinding.ItemGalleryImageBinding
 import br.diegodrp.gallery.model.Image
+import br.diegodrp.gallery.view.util.GalleryDiffUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -15,27 +14,25 @@ import com.bumptech.glide.request.RequestOptions
 class GalleryAdapter(
     private val onLongClick: (Image) -> Unit,
     private val onClick: (Image) -> Unit
-): ListAdapter<Image, GalleryAdapter.GalleryViewHolder>(GalleryDiffUtil()) {
+) : ListAdapter<Image, GalleryAdapter.GalleryViewHolder>(GalleryDiffUtil()) {
 
-    inner class GalleryViewHolder(
-        val imageBinding: ItemImageBinding
-    ): RecyclerView.ViewHolder(imageBinding.root)
+    class GalleryViewHolder(
+        private val imageBinding: ItemGalleryImageBinding
+    ) : RecyclerView.ViewHolder(imageBinding.root) {
 
-    companion object {
-        class GalleryDiffUtil: DiffUtil.ItemCallback<Image>() {
-            override fun areItemsTheSame(
-                oldItem: Image,
-                newItem: Image
-            ): Boolean {
-                return oldItem.id == newItem.id
-            }
+        private val glide = Glide.with(imageBinding.root.context)
+        private val requestOptions = RequestOptions()
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .override(300, 300)
 
-            override fun areContentsTheSame(
-                oldItem: Image,
-                newItem: Image
-            ): Boolean {
-                return oldItem == newItem && oldItem.contentUri.compareTo(newItem.contentUri) == 0
-            }
+        fun bind(image: Image, onLongClick: (Image) -> Unit, onClick: (Image) -> Unit) {
+            glide
+                .load(image.contentUri)
+                .apply(requestOptions)
+                .into(imageBinding.imageView)
+
+            imageBinding.imageView.setOnLongClickListener { onLongClick(image); true }
+            imageBinding.imageView.setOnClickListener { onClick(image) }
         }
     }
 
@@ -44,7 +41,7 @@ class GalleryAdapter(
         viewType: Int
     ): GalleryViewHolder {
         return GalleryViewHolder(
-            ItemImageBinding.inflate(
+            ItemGalleryImageBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -56,18 +53,6 @@ class GalleryAdapter(
         holder: GalleryViewHolder,
         position: Int
     ) {
-        val image = getItem(position)
-
-        val requestOptions = RequestOptions()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .override(300, 300)
-
-        Glide.with(holder.imageBinding.imageView)
-            .load(image.contentUri)
-            .apply(requestOptions)
-            .into(holder.imageBinding.imageView)
-
-        holder.imageBinding.imageView.setOnLongClickListener { onLongClick(image); true }
-        holder.imageBinding.imageView.setOnClickListener { onClick(image) }
+        holder.bind(getItem(position), onLongClick, onClick)
     }
 }
