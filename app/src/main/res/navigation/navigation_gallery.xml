@@ -14,7 +14,7 @@
     </fragment>
     <fragment
         android:id="@+id/fragmentImage"
-        android:name="br.diegodrp.gallery.view.image.FragmentImage"
+        android:name="br.diegodrp.gallery.view.image_viewer.FragmentImageViewer"
         android:label="FragmentImage">
 
         <argument

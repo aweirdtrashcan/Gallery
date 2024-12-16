@@ -1,39 +1,38 @@
-package br.diegodrp.gallery.view.image
+package br.diegodrp.gallery.view.image_viewer
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup.LayoutParams
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import br.diegodrp.gallery.R
-import br.diegodrp.gallery.databinding.FragmentImageBinding
-import br.diegodrp.gallery.databinding.TabLayoutImageBinding
+import br.diegodrp.gallery.databinding.FragmentImageViewerBinding
 import br.diegodrp.gallery.model.Image
+import br.diegodrp.gallery.view.image_picker.ImagePickerAdapter
 import br.diegodrp.gallery.viewmodel.gallery.GalleryState
 import br.diegodrp.gallery.viewmodel.gallery.GalleryViewModel
-import com.bumptech.glide.Glide
-import com.google.android.material.tabs.TabLayoutMediator
 import org.koin.android.ext.android.inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FragmentImage: Fragment(R.layout.fragment_image) {
+class FragmentImageViewer: Fragment(R.layout.fragment_image_viewer) {
 
-    private lateinit var binding: FragmentImageBinding
-    private val args by navArgs<FragmentImageArgs>()
+    private lateinit var binding: FragmentImageViewerBinding
+    private val args by navArgs<FragmentImageViewerArgs>()
     private val viewModel by inject<GalleryViewModel>()
-    private lateinit var adapter: LargeImageAdapter
+    private val imageViewerAdapter = ImageViewerAdapter()
+    private val imagePickerAdapter = ImagePickerAdapter(this::onImagePickerClicked)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = FragmentImageBinding.bind(view)
+        binding = FragmentImageViewerBinding.bind(view)
 
         setupRecyclerView()
 
@@ -47,24 +46,15 @@ class FragmentImage: Fragment(R.layout.fragment_image) {
     }
 
     private fun setupRecyclerView() {
-        if (!this::adapter.isInitialized) {
-            adapter = LargeImageAdapter()
-        }
-        binding.viewPager.adapter = adapter
+        binding.viewPager.adapter = imageViewerAdapter
+        binding.viewPager.offscreenPageLimit = 3
 
-        val glide = Glide.with(requireContext())
-
-        /*TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            *//*val image = viewModel.state.value.images[position]
-            val tabLayoutImageView = TabLayoutImageBinding.inflate(layoutInflater)
-
-            glide
-                .load(image.contentUri)
-                .override(50, 50)
-                .into(tabLayoutImageView.tabLayoutImageView)
-
-            tab.customView = tabLayoutImageView.root*//*
-        }.attach()*/
+        binding.imagePickerRecyclerView.adapter = imagePickerAdapter
+        binding.imagePickerRecyclerView.layoutManager = LinearLayoutManager(
+            requireContext(),
+            RecyclerView.HORIZONTAL,
+            false
+        )
     }
 
     private fun canImageBeLoaded(imageId: Int, images: List<Image>): Boolean {
@@ -78,7 +68,8 @@ class FragmentImage: Fragment(R.layout.fragment_image) {
                 return@withContext
             }
 
-            adapter.submitList(state.images)
+            imageViewerAdapter.submitList(state.images)
+            imagePickerAdapter.submitList(state.images)
 
             val imageIndex = findImageIndex(args.imageId, state.images)
             jumpToCurrentImage(imageIndex)
@@ -96,5 +87,10 @@ class FragmentImage: Fragment(R.layout.fragment_image) {
     private fun findImageIndex(imageId: Int, images: List<Image>): Int {
         val image = images.find { it.id == imageId.toLong() }
         return images.indexOf(image)
+    }
+
+    private fun onImagePickerClicked(imagePosition: Int) {
+        binding.viewPager.setCurrentItem(imagePosition, true)
+        binding.imagePickerRecyclerView.smoothScrollToPosition(imagePosition)
     }
 }
