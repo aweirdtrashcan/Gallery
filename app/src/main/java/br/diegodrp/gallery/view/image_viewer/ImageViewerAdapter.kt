@@ -14,8 +14,16 @@ class ImageViewerAdapter:
     ListAdapter<Image, ImageViewerViewHolder>(GalleryDiffUtil()) {
 
     class ImageViewerViewHolder(
-        val binding: ItemImageViewerBinding
-    ) : RecyclerView.ViewHolder(binding.root)
+        private val binding: ItemImageViewerBinding
+    ): RecyclerView.ViewHolder(binding.root) {
+        val glide = Glide.with(binding.imageView.context)
+
+        fun bind(image: Image) {
+            glide
+                .load(image.contentUri)
+                .into(binding.imageView)
+        }
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -34,10 +42,6 @@ class ImageViewerAdapter:
         holder: ImageViewerViewHolder,
         position: Int
     ) {
-        val image = getItem(position)
-
-        Glide.with(holder.binding.imageView)
-            .load(image.contentUri)
-            .into(holder.binding.imageView)
+        holder.bind(getItem(position))
     }
 }

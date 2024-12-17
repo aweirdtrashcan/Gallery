@@ -18,7 +18,7 @@
         android:label="FragmentImage">
 
         <argument
-            android:name="image_id"
+            android:name="image_position"
             android:defaultValue="-1"
             app:argType="integer"
             app:nullable="false" />

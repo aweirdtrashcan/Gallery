@@ -57,13 +57,10 @@ class FragmentImageViewer: Fragment(R.layout.fragment_image_viewer) {
         )
     }
 
-    private fun canImageBeLoaded(imageId: Int, images: List<Image>): Boolean {
-        return imageId != -1 && images.find { it.id == imageId.toLong() } != null
-    }
-
     private suspend fun collectState(state: GalleryState) {
         withContext(Dispatchers.Main) {
-            if (!canImageBeLoaded(args.imageId, state.images)) {
+            val isPositionInvalid = args.imagePosition == -1
+            if (isPositionInvalid) {
                 findNavController().popBackStack()
                 return@withContext
             }
@@ -71,22 +68,8 @@ class FragmentImageViewer: Fragment(R.layout.fragment_image_viewer) {
             imageViewerAdapter.submitList(state.images)
             imagePickerAdapter.submitList(state.images)
 
-            val imageIndex = findImageIndex(args.imageId, state.images)
-            jumpToCurrentImage(imageIndex)
+            binding.viewPager.setCurrentItem(args.imagePosition, false)
         }
-    }
-
-    private fun jumpToCurrentImage(imageIndex: Int) {
-        if (imageIndex == -1) {
-            findNavController().popBackStack()
-        } else {
-            binding.viewPager.setCurrentItem(imageIndex, false)
-        }
-    }
-
-    private fun findImageIndex(imageId: Int, images: List<Image>): Int {
-        val image = images.find { it.id == imageId.toLong() }
-        return images.indexOf(image)
     }
 
     private fun onImagePickerClicked(imagePosition: Int) {

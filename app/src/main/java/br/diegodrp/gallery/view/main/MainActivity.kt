@@ -23,7 +23,7 @@ import kotlin.collections.iterator
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val onPermissionRequestedCallbacks = mutableListOf<OnPermissionRequestedCallback?>()
+    private val onPermissionRequestedCallbacks = mutableListOf<OnPermissionRequestedCallback>()
 
     private val requestPermissionActivity = registerForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
@@ -113,13 +113,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun registerOnPermissionRequested(
-        onPermissionRequested: OnPermissionRequestedCallback?
+        onPermissionRequested: OnPermissionRequestedCallback
     ) {
         onPermissionRequestedCallbacks.add(onPermissionRequested)
     }
 
     fun unregisterOnPermissionRequested(
-        onPermissionRequested: OnPermissionRequestedCallback?
+        onPermissionRequested: OnPermissionRequestedCallback
     ) {
         onPermissionRequestedCallbacks.remove(onPermissionRequested)
     }

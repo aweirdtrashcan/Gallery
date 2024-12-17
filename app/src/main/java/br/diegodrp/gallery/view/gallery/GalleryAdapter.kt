@@ -12,27 +12,31 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 
 class GalleryAdapter(
-    private val onLongClick: (Image) -> Unit,
-    private val onClick: (Image) -> Unit
+    private val onLongClick: (imagePosition: Int) -> Unit,
+    private val onClick: (imagePosition: Int) -> Unit
 ) : ListAdapter<Image, GalleryAdapter.GalleryViewHolder>(GalleryDiffUtil()) {
 
     class GalleryViewHolder(
-        private val imageBinding: ItemGalleryImageBinding
-    ) : RecyclerView.ViewHolder(imageBinding.root) {
+        private val binding: ItemGalleryImageBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val glide = Glide.with(imageBinding.root.context)
+        private val glide = Glide.with(binding.root.context)
         private val requestOptions = RequestOptions()
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .override(300, 300)
 
-        fun bind(image: Image, onLongClick: (Image) -> Unit, onClick: (Image) -> Unit) {
+        fun bind(image: Image) {
             glide
                 .load(image.contentUri)
                 .apply(requestOptions)
-                .into(imageBinding.imageView)
+                .into(binding.imageView)
+        }
 
-            imageBinding.imageView.setOnLongClickListener { onLongClick(image); true }
-            imageBinding.imageView.setOnClickListener { onClick(image) }
+        fun setOnClickListeners(
+            onLongClick: (imagePosition: Int) -> Unit,
+            onClick: (imagePosition: Int) -> Unit) {
+            binding.imageView.setOnClickListener { onClick(bindingAdapterPosition) }
+            binding.imageView.setOnLongClickListener { onLongClick(bindingAdapterPosition); true }
         }
     }
 
@@ -46,13 +50,13 @@ class GalleryAdapter(
                 parent,
                 false
             )
-        )
+        ).apply { setOnClickListeners(onLongClick, onClick) }
     }
 
     override fun onBindViewHolder(
         holder: GalleryViewHolder,
         position: Int
     ) {
-        holder.bind(getItem(position), onLongClick, onClick)
+        holder.bind(getItem(position))
     }
 }

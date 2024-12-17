@@ -94,10 +94,10 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
         if (!this::adapter.isInitialized) {
             adapter = GalleryAdapter(
                 onLongClick = {
-                    showImageBottomSheetDialog(image = it)
+                    showImageBottomSheetDialog(imagePosition = it)
                 },
                 onClick = {
-                    onImageClicked(image = it)
+                    onImageClicked(imagePosition = it)
                 }
             )
             adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -108,9 +108,9 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
         binding.recyclerView.addItemDecoration(GalleryItemDecoration(8))
     }
 
-    private fun onImageClicked(image: Image) {
+    private fun onImageClicked(imagePosition: Int) {
         val navArgs = FragmentGalleryDirections.actionFragmentGalleryToFragmentImage(
-            imageId = image.id.toInt()
+            imagePosition = imagePosition
         )
 
         findNavController().navigate(navArgs)
@@ -257,7 +257,8 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
         }
     }
 
-    private fun showImageBottomSheetDialog(image: Image) {
+    private fun showImageBottomSheetDialog(imagePosition: Int) {
+        val image = vm.state.value.images[imagePosition]
         val bottomSheetDialog = BottomSheetDialog(requireContext())
         val bottomSheetView = BottomSheetImageInfoBinding.inflate(layoutInflater)
 
