@@ -166,8 +166,7 @@ class FragmentGallery : Fragment(R.layout.fragment_gallery), OnPermissionRequest
                 .apply(requestOptions)
                 .into(binding.ivFirstImage)
 
-            val title = "Showing ${images.size} images"
-            binding.toolbar.setTitle(title)
+            binding.toolbar.setTitle("Images")
         }
     }
 
