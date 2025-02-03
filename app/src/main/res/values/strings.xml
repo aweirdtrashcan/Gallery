@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Gallery</string>
+    <string name="failed_loading_images">Failed loading your images!</string>
+    <string name="failed_loading_videos">Failed loading your videos!</string>
+    <string name="failed_either_image_or_video">Failed loading either the images or videos</string>
+    <string name="unknown_album">Unknown Album</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/gallery_navigation"
+    app:startDestination="@id/albumGridFragment">
+
+    <!--Change this fragment's name-->
+    <fragment
+        android:id="@+id/galleryFragment"
+        android:name="com.diegodrp.gallery.view.preview_grid.GalleryFragment"
+        android:label="GalleryFragment" >
+        <argument
+            android:name="albumName"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/albumGridFragment"
+        android:name="com.diegodrp.gallery.view.album_grid.AlbumGridFragment"
+        android:label="Album Grid"
+        tools:layout="@layout/fragment_album_grid">
+
+        <action android:id="@+id/loadAlbumPreviews"
+            app:destination="@id/galleryFragment" />
+
+    </fragment>
+
+</navigation>
