@@ -2,26 +2,38 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/icon_preview_size"
-    android:layout_height="wrap_content">
+    android:layout_width="@dimen/icon_preview_size_plus_padding"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/icon_preview_padding">
 
-    <ImageView
-        android:id="@+id/iv_preview_icon_image"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="@dimen/icon_preview_size"
         android:layout_height="@dimen/icon_preview_size"
+        app:cardCornerRadius="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_preview_icon_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/album_name"
         android:layout_width="@dimen/icon_preview_size"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textAlignment="viewStart"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_preview_icon_image"
+        app:layout_constraintTop_toBottomOf="@id/cardView"
         tools:text="This is a test" />
 
 

@@ -1,4 +1,4 @@
-package com.diegodrp.gallery.view.preview_grid
+package com.diegodrp.gallery.view.selected_album
 
 import android.os.Bundle
 import android.view.View
@@ -7,26 +7,23 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.diegodrp.gallery.R
-import com.diegodrp.gallery.databinding.FragmentGalleryBinding
-import com.diegodrp.gallery.viewmodel.gallery.GalleryViewModel
+import com.diegodrp.gallery.databinding.FragmentPreviewGridBinding
+import com.diegodrp.gallery.viewmodel.preview_grid.PreviewGridViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
-class GalleryFragment: Fragment(R.layout.fragment_gallery) {
+class SelectedAlbumFragment: Fragment(R.layout.fragment_preview_grid) {
 
-    private lateinit var binding: FragmentGalleryBinding
-    private val vm by activityViewModels<GalleryViewModel>()
+    private lateinit var binding: FragmentPreviewGridBinding
+    private val vm by activityViewModels<PreviewGridViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = FragmentGalleryBinding.bind(view)
+        binding = FragmentPreviewGridBinding.bind(view)
 
         /*binding.rvGalleryPreview.adapter = adapter
         binding.rvGalleryPreview.layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)

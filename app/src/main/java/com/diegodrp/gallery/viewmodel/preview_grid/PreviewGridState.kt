@@ -1,7 +1,7 @@
-package com.diegodrp.gallery.viewmodel.gallery
+package com.diegodrp.gallery.viewmodel.preview_grid
 
 import com.diegodrp.gallery.model.Image
 
-data class GalleryViewModelState(
+data class PreviewGridState(
     val images: List<Image> = listOf()
 )

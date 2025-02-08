@@ -1,4 +1,4 @@
-package com.diegodrp.gallery.viewmodel.gallery
+package com.diegodrp.gallery.viewmodel.preview_grid
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,14 +8,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class GalleryViewModel @Inject constructor(private val repository: MediaRepository): ViewModel() {
+class PreviewGridViewModel @Inject constructor(private val repository: MediaRepository): ViewModel() {
 
-    private val _state = MutableStateFlow(GalleryViewModelState())
+    private val _state = MutableStateFlow(PreviewGridState())
     val state = _state.asStateFlow()
 
     fun getImages() {

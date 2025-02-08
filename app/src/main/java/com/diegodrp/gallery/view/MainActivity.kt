@@ -1,11 +1,20 @@
 package com.diegodrp.gallery.view
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.enableEdgeToEdge
+import androidx.core.app.NavUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.diegodrp.gallery.data.MediaRepository
 import com.diegodrp.gallery.databinding.ActivityMainBinding
 import com.diegodrp.gallery.extensions.hasPermission
@@ -21,18 +30,25 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : PermissionActivity() {
+class MainActivity: PermissionActivity() {
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
-
-    @Inject
-    lateinit var repo: MediaRepository
+    private val backPressedCallback by lazy {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val hasPoppedBackStack = binding.fragmentContainerView.findNavController().popBackStack()
+                if (!hasPoppedBackStack) {
+                    finish()
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(binding.main)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+        setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -41,6 +57,8 @@ class MainActivity : PermissionActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        setupActionBar()
 
         if (!hasPermission(ReadImages)) {
             showPermissionDialog(ReadImages) {
@@ -51,5 +69,26 @@ class MainActivity : PermissionActivity() {
                 }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
+    private fun setupActionBar() {
+        val navController = binding.fragmentContainerView.findNavController()
+        setSupportActionBar(binding.toolbar)
+        setupActionBarWithNavController(navController)
+
+        onBackPressedDispatcher.addCallback(backPressedCallback)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

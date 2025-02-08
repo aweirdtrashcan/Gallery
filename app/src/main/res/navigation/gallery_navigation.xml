@@ -7,9 +7,9 @@
 
     <!--Change this fragment's name-->
     <fragment
-        android:id="@+id/galleryFragment"
-        android:name="com.diegodrp.gallery.view.preview_grid.GalleryFragment"
-        android:label="GalleryFragment" >
+        android:id="@+id/selectedAlbumFragment"
+        android:name="com.diegodrp.gallery.view.selected_album.SelectedAlbumFragment"
+        android:label="{albumName}" >
         <argument
             android:name="albumName"
             app:argType="string" />
@@ -18,11 +18,16 @@
     <fragment
         android:id="@+id/albumGridFragment"
         android:name="com.diegodrp.gallery.view.album_grid.AlbumGridFragment"
-        android:label="Album Grid"
+        android:label="{toolbarTitle}"
         tools:layout="@layout/fragment_album_grid">
 
-        <action android:id="@+id/loadAlbumPreviews"
-            app:destination="@id/galleryFragment" />
+        <argument
+            android:name="toolbarTitle"
+            android:defaultValue="Albums"
+            app:argType="string"/>
+
+        <action android:id="@+id/loadAlbum"
+            app:destination="@id/selectedAlbumFragment" />
 
     </fragment>
 
