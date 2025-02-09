@@ -1,4 +1,4 @@
-package com.diegodrp.gallery.viewmodel.preview_grid
+package com.diegodrp.gallery.viewmodel.selected_album
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,21 +12,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PreviewGridViewModel @Inject constructor(private val repository: MediaRepository): ViewModel() {
+class SelectedAlbumViewModel @Inject constructor(
+    private val repository: MediaRepository
+): ViewModel() {
 
-    private val _state = MutableStateFlow(PreviewGridState())
+    private val _state = MutableStateFlow(SelectedAlbumState())
     val state = _state.asStateFlow()
 
-    fun getImages() {
+    fun getAlbum(albumName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.loadAlbums().collect { albums ->
-                if (albums is Resource.Success) {
-                    for (album in albums.data) {
-                        println(album)
-                    }
-                }
-            }
+            val images = repository.loadImages()[albumName]
         }
     }
-
 }

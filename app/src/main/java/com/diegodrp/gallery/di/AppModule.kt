@@ -3,6 +3,7 @@ package com.diegodrp.gallery.di
 import android.content.Context
 import com.diegodrp.gallery.data.MediaRepository
 import com.diegodrp.gallery.data.MediaRepositoryImpl
+import com.diegodrp.gallery.helpers.PreviewSizeCalculator
 import com.diegodrp.gallery.helpers.StringResolver
 import dagger.Module
 import dagger.Provides
@@ -27,5 +28,10 @@ object AppModule {
         return MediaRepositoryImpl(context, stringResolver)
     }
 
+    @Singleton
+    @Provides
+    fun providePreviewSizeCalculator(): PreviewSizeCalculator {
+        return PreviewSizeCalculator()
+    }
 
 }

@@ -1,7 +1,6 @@
 package com.diegodrp.gallery.view.permission
 
 import android.content.Context
-import android.content.DialogInterface
 import androidx.appcompat.app.AlertDialog
 import com.diegodrp.gallery.helpers.Permission
 

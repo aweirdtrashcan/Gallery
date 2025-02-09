@@ -7,6 +7,6 @@ data class Video(
     val name: String,
     val size: Int,
     val duration: Int,
-    val date: Int,
+    override val date: Int,
     val uri: Uri
 ): Media

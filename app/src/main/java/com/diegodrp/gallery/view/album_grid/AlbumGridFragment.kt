@@ -3,7 +3,7 @@ package com.diegodrp.gallery.view.album_grid
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -12,20 +12,21 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.diegodrp.gallery.R
 import com.diegodrp.gallery.databinding.FragmentAlbumGridBinding
+import com.diegodrp.gallery.helpers.PreviewGridItemDecoration
 import com.diegodrp.gallery.model.Album
-import com.diegodrp.gallery.viewmodel.album_grid.AlbumGridEvent
-import com.diegodrp.gallery.viewmodel.album_grid.AlbumGridViewModel
+import com.diegodrp.gallery.viewmodel.album.AlbumEvent
+import com.diegodrp.gallery.viewmodel.album.AlbumViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
-class AlbumGridFragment: Fragment(R.layout.fragment_album_grid) {
+class AlbumGridFragment : Fragment(R.layout.fragment_album_grid) {
 
     private lateinit var binding: FragmentAlbumGridBinding
     private lateinit var adapter: AlbumGridAdapter
-    private val vm by viewModels<AlbumGridViewModel>()
+    private val vm by activityViewModels<AlbumViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,7 +64,8 @@ class AlbumGridFragment: Fragment(R.layout.fragment_album_grid) {
         adapter = AlbumGridAdapter(this::onAlbumClicked)
         binding.rvAlbums.adapter = adapter
         binding.rvAlbums.layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
-        vm.onEvent(AlbumGridEvent.LoadImages)
+        binding.rvAlbums.addItemDecoration(PreviewGridItemDecoration())
+        vm.onEvent(AlbumEvent.LoadImages)
     }
 
     private fun onAlbumClicked(album: Album) {

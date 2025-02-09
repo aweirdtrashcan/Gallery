@@ -4,39 +4,29 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.enableEdgeToEdge
-import androidx.core.app.NavUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.NavHost
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.diegodrp.gallery.data.MediaRepository
 import com.diegodrp.gallery.databinding.ActivityMainBinding
 import com.diegodrp.gallery.extensions.hasPermission
 import com.diegodrp.gallery.extensions.viewBinding
-import com.diegodrp.gallery.helpers.PERMISSION_READ_IMAGES
 import com.diegodrp.gallery.helpers.ReadImages
-import com.diegodrp.gallery.helpers.Resource
+import com.diegodrp.gallery.helpers.ReadVideos
 import com.diegodrp.gallery.view.permission.PermissionActivity
 import com.diegodrp.gallery.view.permission.showPermissionDialog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity: PermissionActivity() {
+class MainActivity : PermissionActivity() {
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val hasPoppedBackStack = binding.fragmentContainerView.findNavController().popBackStack()
+                val hasPoppedBackStack =
+                    binding.fragmentContainerView.findNavController().popBackStack()
                 if (!hasPoppedBackStack) {
                     finish()
                 }
@@ -64,15 +54,23 @@ class MainActivity: PermissionActivity() {
             showPermissionDialog(ReadImages) {
                 handlePermission(ReadImages) { isGranted: Boolean ->
                     if (isGranted) {
-                        Toast.makeText(this@MainActivity, "Permission granted", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, "Permission granted", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
         }
-    }
 
-    override fun onStop() {
-        super.onStop()
+        if (!hasPermission(ReadVideos)) {
+            showPermissionDialog(ReadVideos) {
+                handlePermission(ReadVideos) { isGranted: Boolean ->
+                    if (isGranted) {
+                        Toast.makeText(this@MainActivity, "Permission granted", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+            }
+        }
     }
 
     private fun setupActionBar() {

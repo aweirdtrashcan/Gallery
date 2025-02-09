@@ -8,11 +8,11 @@ import androidx.core.database.getIntOrNull
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import com.diegodrp.gallery.R
+import com.diegodrp.gallery.exception.ImageLoadException
+import com.diegodrp.gallery.exception.VideoLoadException
 import com.diegodrp.gallery.extensions.isQPlus
-import com.diegodrp.gallery.helpers.ImageLoadException
 import com.diegodrp.gallery.helpers.Resource
 import com.diegodrp.gallery.helpers.StringResolver
-import com.diegodrp.gallery.helpers.VideoLoadException
 import com.diegodrp.gallery.model.Album
 import com.diegodrp.gallery.model.Image
 import com.diegodrp.gallery.model.Video
@@ -34,7 +34,9 @@ class MediaRepositoryImpl(
         )
         val imageUri = getImageUri()
 
-        val cursor = context.contentResolver.query(imageUri, projection, null, null, null)
+        val sortOrder = "${MediaStore.Images.Media.DATE_MODIFIED} DESC"
+
+        val cursor = context.contentResolver.query(imageUri, projection, null, null, sortOrder)
 
         if (cursor == null) {
             throw ImageLoadException()
@@ -82,7 +84,9 @@ class MediaRepositoryImpl(
         )
         val videoUri = getVideoUri()
 
-        val cursor = context.contentResolver.query(videoUri, projection, null, null, null)
+        val sortOrder = "${MediaStore.Video.Media.DATE_MODIFIED} DESC"
+
+        val cursor = context.contentResolver.query(videoUri, projection, null, null, sortOrder)
 
         if (cursor == null) {
             throw VideoLoadException()
@@ -143,7 +147,11 @@ class MediaRepositoryImpl(
                     // Create album if not exist
                     var album = albums.find { it.name == imageAlbum.key }
                     if (album == null) {
-                        val newAlbum = Album(name = imageAlbum.key, images = mutableListOf(), videos = mutableListOf())
+                        val newAlbum = Album(
+                            name = imageAlbum.key,
+                            images = mutableListOf(),
+                            videos = mutableListOf()
+                        )
                         albums += newAlbum
                         album = newAlbum
                     }
@@ -159,7 +167,11 @@ class MediaRepositoryImpl(
                     // Create album if not exist
                     var album = albums.find { it.name == videoAlbum.key }
                     if (album == null) {
-                        val newAlbum = Album(name = videoAlbum.key, images = mutableListOf(), videos = mutableListOf())
+                        val newAlbum = Album(
+                            name = videoAlbum.key,
+                            images = mutableListOf(),
+                            videos = mutableListOf()
+                        )
                         albums += newAlbum
                         album = newAlbum
                     }
@@ -178,12 +190,22 @@ class MediaRepositoryImpl(
 
             if (images == null) {
                 emit(Resource.Loading(isLoading = false))
-                emit(Resource.Error(data = albums, error = stringResolver.getString(R.string.failed_loading_images)))
+                emit(
+                    Resource.Error(
+                        data = albums,
+                        error = stringResolver.getString(R.string.failed_loading_images)
+                    )
+                )
             }
 
             if (videos == null) {
                 emit(Resource.Loading(isLoading = false))
-                emit(Resource.Error(data = albums, error = stringResolver.getString(R.string.failed_loading_videos)))
+                emit(
+                    Resource.Error(
+                        data = albums,
+                        error = stringResolver.getString(R.string.failed_loading_videos)
+                    )
+                )
             }
 
         }

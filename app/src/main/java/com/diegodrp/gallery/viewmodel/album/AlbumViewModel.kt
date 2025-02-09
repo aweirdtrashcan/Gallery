@@ -1,4 +1,4 @@
-package com.diegodrp.gallery.viewmodel.album_grid
+package com.diegodrp.gallery.viewmodel.album
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AlbumGridViewModel @Inject constructor(
+class AlbumViewModel @Inject constructor(
     private val mediaRepository: MediaRepository
 ) : ViewModel() {
 
@@ -28,9 +28,9 @@ class AlbumGridViewModel @Inject constructor(
     private val _errorState = MutableSharedFlow<String>()
     val errorState = _errorState.asSharedFlow()
 
-    fun onEvent(event: AlbumGridEvent) {
+    fun onEvent(event: AlbumEvent) {
         when (event) {
-            is AlbumGridEvent.LoadImages -> {
+            is AlbumEvent.LoadImages -> {
                 processAlbums()
             }
         }

@@ -1,6 +1,5 @@
 package com.diegodrp.gallery.data
 
-import android.net.Uri
 import com.diegodrp.gallery.helpers.Resource
 import com.diegodrp.gallery.model.Album
 import com.diegodrp.gallery.model.Image
