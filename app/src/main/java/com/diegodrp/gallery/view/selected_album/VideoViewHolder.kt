@@ -2,6 +2,7 @@ package com.diegodrp.gallery.view.selected_album
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
+import com.diegodrp.gallery.R
 import com.diegodrp.gallery.databinding.ResPreviewVideoBinding
 import com.diegodrp.gallery.helpers.PreviewSizeCalculator
 import com.diegodrp.gallery.model.Media
@@ -27,5 +28,12 @@ class VideoViewHolder(
             .load(video.uri)
             .override(size.width, size.height)
             .into(videoBinding.ivPreviewIconVideo)
+
+        videoBinding.tvPreviewVideoLength.text = calculateVideoLength(video)
+    }
+
+    private fun calculateVideoLength(video: Video): String {
+        val length = video.duration / 61235f
+        return length.toString().replace(".", ":")
     }
 }
