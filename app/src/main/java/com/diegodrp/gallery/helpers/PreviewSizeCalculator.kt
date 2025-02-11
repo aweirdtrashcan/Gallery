@@ -2,21 +2,38 @@ package com.diegodrp.gallery.helpers
 
 import android.content.Context
 import android.util.TypedValue
+import kotlin.math.abs
 
 class PreviewSizeCalculator {
-    fun calculatePreviewSize(context: Context): Size {
+    /* Calculates the size of the Preview based on screen width, the
+       desired size of the preview and how many columns are being used
+       in the StaggeredGridLayout */
+    fun calculatePreviewSize(context: Context, previewSize: Int): Size {
         val displayMetrics = context.resources.displayMetrics
         val screenWidth = displayMetrics.widthPixels
 
-        val columnCount = 3
+        val size = screenWidth / calculateColumnCount(context, previewSize)
 
-        val spacingPx = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, 0f, displayMetrics
-        )
+        return Size(size, size)
+    }
 
-        val previewSize = screenWidth / columnCount
+    /* Calculates how many columns there should be based on the screen width
+       and the desired size of the preview.
+     */
+    fun calculateColumnCount(context: Context, previewSize: Int): Int {
+        val displayMetrics = context.resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
 
-        return Size(previewSize, previewSize)
+        var columnCount = 1
+
+        var sizeDifference = abs(screenWidth / columnCount) - previewSize
+
+        while (sizeDifference > previewSize) {
+            columnCount++
+            sizeDifference = abs(screenWidth / columnCount) - previewSize
+        }
+
+        return columnCount
     }
 
     data class Size(val width: Int, val height: Int)

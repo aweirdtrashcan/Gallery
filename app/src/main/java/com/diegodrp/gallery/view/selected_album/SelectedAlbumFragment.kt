@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.diegodrp.gallery.R
 import com.diegodrp.gallery.databinding.FragmentPreviewGridBinding
 import com.diegodrp.gallery.helpers.PreviewGridItemDecoration
+import com.diegodrp.gallery.helpers.PreviewSizeCalculator
 import com.diegodrp.gallery.model.Media
 import com.diegodrp.gallery.viewmodel.album.AlbumViewModel
 import com.diegodrp.gallery.viewmodel.selected_album.SelectedAlbumViewModel
@@ -27,16 +28,24 @@ class SelectedAlbumFragment : Fragment(R.layout.fragment_preview_grid) {
 
     private val args by navArgs<SelectedAlbumFragmentArgs>()
 
-    private val adapter = SelectedAlbumAdapter(this::onMediaClicked)
+    private val adapter by lazy {
+        SelectedAlbumAdapter(this::onMediaClicked)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentPreviewGridBinding.bind(view)
 
+        val sizeCalculator = PreviewSizeCalculator()
+        val previewSize = resources.getInteger(R.integer.preview_size)
+
         binding.rvGalleryPreview.adapter = adapter
         binding.rvGalleryPreview.layoutManager =
-            StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
+            StaggeredGridLayoutManager(
+                sizeCalculator.calculateColumnCount(requireContext(), previewSize),
+                RecyclerView.VERTICAL
+            )
         binding.rvGalleryPreview.addItemDecoration(PreviewGridItemDecoration())
     }
 

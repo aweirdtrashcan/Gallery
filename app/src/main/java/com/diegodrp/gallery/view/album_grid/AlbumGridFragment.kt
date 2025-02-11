@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.diegodrp.gallery.R
 import com.diegodrp.gallery.databinding.FragmentAlbumGridBinding
 import com.diegodrp.gallery.helpers.PreviewGridItemDecoration
+import com.diegodrp.gallery.helpers.PreviewSizeCalculator
 import com.diegodrp.gallery.model.Album
 import com.diegodrp.gallery.viewmodel.album.AlbumEvent
 import com.diegodrp.gallery.viewmodel.album.AlbumViewModel
@@ -25,8 +26,11 @@ import kotlinx.coroutines.withContext
 class AlbumGridFragment : Fragment(R.layout.fragment_album_grid) {
 
     private lateinit var binding: FragmentAlbumGridBinding
-    private lateinit var adapter: AlbumGridAdapter
     private val vm by activityViewModels<AlbumViewModel>()
+
+    private val adapter by lazy {
+        AlbumGridAdapter(this::onAlbumClicked)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,9 +65,14 @@ class AlbumGridFragment : Fragment(R.layout.fragment_album_grid) {
     override fun onStart() {
         super.onStart()
 
-        adapter = AlbumGridAdapter(this::onAlbumClicked)
+        val sizeCalculator = PreviewSizeCalculator()
+        val previewSize = resources.getInteger(R.integer.preview_size)
+
         binding.rvAlbums.adapter = adapter
-        binding.rvAlbums.layoutManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
+        binding.rvAlbums.layoutManager = StaggeredGridLayoutManager(
+            sizeCalculator.calculateColumnCount(requireContext(), previewSize),
+            RecyclerView.VERTICAL
+        )
         binding.rvAlbums.addItemDecoration(PreviewGridItemDecoration())
         vm.onEvent(AlbumEvent.LoadImages)
     }

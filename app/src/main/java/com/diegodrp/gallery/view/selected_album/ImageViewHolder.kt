@@ -2,6 +2,7 @@ package com.diegodrp.gallery.view.selected_album
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
+import com.diegodrp.gallery.R
 import com.diegodrp.gallery.databinding.ResPreviewImageBinding
 import com.diegodrp.gallery.helpers.PreviewSizeCalculator
 import com.diegodrp.gallery.model.Image
@@ -15,7 +16,10 @@ class ImageViewHolder(
     private val sizeCalculator = PreviewSizeCalculator()
 
     private val context = imageBinding.ivPreviewIconImage.context
-    private val size = sizeCalculator.calculatePreviewSize(context)
+    private val size = sizeCalculator.calculatePreviewSize(
+        context,
+        context.resources.getInteger(R.integer.preview_size)
+    )
 
     fun bind(image: Image, onMediaClicked: (media: Media) -> Unit) {
         imageBinding.root.layoutParams = imageBinding.root.layoutParams.apply {

@@ -1,9 +1,9 @@
 package com.diegodrp.gallery.view.album_grid
 
-import android.content.Context
 import android.util.TypedValue
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
+import com.diegodrp.gallery.R
 import com.diegodrp.gallery.databinding.ResPreviewAlbumBinding
 import com.diegodrp.gallery.helpers.PreviewSizeCalculator
 import com.diegodrp.gallery.model.Album
@@ -19,7 +19,12 @@ class AlbumViewHolder(
 
     private val glide = Glide.with(binding.root)
     private val context = binding.root.context
-    private val size = calculateViewSize(context)
+
+    private val previewSize = context.resources.getInteger(R.integer.preview_size)
+    private val size = PreviewSizeCalculator().calculatePreviewSize(
+        context,
+        previewSize
+    )
 
     fun bind(album: Album, onAlbumClicked: (album: Album) -> Unit) {
         val medias = listOf(album.images.getOrNull(0), album.videos.getOrNull(0))
@@ -43,8 +48,8 @@ class AlbumViewHolder(
                 context.resources.displayMetrics
             ).toInt()
 
-            width = size
-            height = size + textViewHeight
+            width = size.width
+            height = size.width + textViewHeight
         }
 
         newestMedia?.let { media ->
@@ -64,10 +69,5 @@ class AlbumViewHolder(
         binding.albumName.text = album.name
 
         binding.root.setOnClickListener { onAlbumClicked(album) }
-    }
-
-    private fun calculateViewSize(context: Context): Int {
-        val sizeCalculator = PreviewSizeCalculator()
-        return sizeCalculator.calculatePreviewSize(context).width
     }
 }
