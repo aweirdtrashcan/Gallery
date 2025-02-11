@@ -33,6 +33,8 @@ class VideoViewHolder(
             .into(videoBinding.ivPreviewIconVideo)
 
         videoBinding.tvPreviewVideoLength.text = formatVideoDuration(video)
+
+        videoBinding.root.setOnClickListener { onMediaClicked(video) }
     }
 
     private fun formatVideoDuration(video: Video): String {

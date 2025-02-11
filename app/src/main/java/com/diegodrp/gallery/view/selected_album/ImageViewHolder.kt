@@ -32,5 +32,7 @@ class ImageViewHolder(
             // TODO: dynamic size for image.
             .override(size.width, size.height)
             .into(imageBinding.ivPreviewIconImage)
+
+        imageBinding.root.setOnClickListener { onMediaClicked(image) }
     }
 }

@@ -9,10 +9,16 @@
     <fragment
         android:id="@+id/selectedAlbumFragment"
         android:name="com.diegodrp.gallery.view.selected_album.SelectedAlbumFragment"
-        android:label="{albumName}" >
+        android:label="{albumName}">
         <argument
             android:name="albumName"
             app:argType="string" />
+        <action
+            android:id="@+id/to_image_fragment"
+            app:destination="@id/image_fragment" />
+        <action
+            android:id="@+id/to_video_fragment"
+            app:destination="@id/video_fragment" />
     </fragment>
 
     <fragment
@@ -20,15 +26,31 @@
         android:name="com.diegodrp.gallery.view.album_grid.AlbumGridFragment"
         android:label="{toolbarTitle}"
         tools:layout="@layout/fragment_album_grid">
-
         <argument
             android:name="toolbarTitle"
             android:defaultValue="Albums"
-            app:argType="string"/>
-
-        <action android:id="@+id/loadAlbum"
+            app:argType="string" />
+        <action
+            android:id="@+id/loadAlbum"
             app:destination="@id/selectedAlbumFragment" />
+    </fragment>
 
+    <fragment
+        android:id="@+id/image_fragment"
+        android:name="com.diegodrp.gallery.view.image.ImageFragment"
+        tools:layout="@layout/fragment_image">
+        <argument
+            android:name="image"
+            app:argType="com.diegodrp.gallery.model.Image" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/video_fragment"
+        android:name="com.diegodrp.gallery.view.image.VideoFragment"
+        tools:layout="@layout/fragment_video">
+        <argument
+            android:name="video_id"
+            app:argType="long" />
     </fragment>
 
 </navigation>
