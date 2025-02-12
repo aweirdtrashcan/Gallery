@@ -46,11 +46,11 @@
 
     <fragment
         android:id="@+id/video_fragment"
-        android:name="com.diegodrp.gallery.view.image.VideoFragment"
+        android:name="com.diegodrp.gallery.view.video.VideoFragment"
         tools:layout="@layout/fragment_video">
         <argument
-            android:name="video_id"
-            app:argType="long" />
+            android:name="video"
+            app:argType="com.diegodrp.gallery.model.Video" />
     </fragment>
 
 </navigation>

@@ -2,9 +2,7 @@ package com.diegodrp.gallery.view.selected_album
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -17,11 +15,9 @@ import com.diegodrp.gallery.R
 import com.diegodrp.gallery.databinding.FragmentPreviewGridBinding
 import com.diegodrp.gallery.helpers.PreviewGridItemDecoration
 import com.diegodrp.gallery.helpers.PreviewSizeCalculator
-import com.diegodrp.gallery.model.Album
 import com.diegodrp.gallery.model.Image
 import com.diegodrp.gallery.model.Media
 import com.diegodrp.gallery.model.Video
-import com.diegodrp.gallery.viewmodel.album.AlbumViewModel
 import com.diegodrp.gallery.viewmodel.selected_album.SelectedAlbumViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -45,13 +41,12 @@ class SelectedAlbumFragment : Fragment(R.layout.fragment_preview_grid) {
 
         binding = FragmentPreviewGridBinding.bind(view)
 
-        val sizeCalculator = PreviewSizeCalculator()
-        val previewSize = resources.getInteger(R.integer.preview_size)
+        val previewSize = resources.getInteger(R.integer.media_preview_size)
 
         binding.rvGalleryPreview.adapter = adapter
         binding.rvGalleryPreview.layoutManager =
             StaggeredGridLayoutManager(
-                sizeCalculator.calculateColumnCount(requireContext(), previewSize),
+                PreviewSizeCalculator.calculateColumnCount(requireContext(), previewSize),
                 RecyclerView.VERTICAL
             )
         binding.rvGalleryPreview.addItemDecoration(PreviewGridItemDecoration())
@@ -98,7 +93,7 @@ class SelectedAlbumFragment : Fragment(R.layout.fragment_preview_grid) {
 
     private fun loadVideo(video: Video) {
         val loadVideoNavigation = SelectedAlbumFragmentDirections.toVideoFragment(
-            videoId = video.id
+            video = video
         )
         findNavController().navigate(loadVideoNavigation)
     }

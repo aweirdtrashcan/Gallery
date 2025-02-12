@@ -20,8 +20,8 @@ class AlbumViewHolder(
     private val glide = Glide.with(binding.root)
     private val context = binding.root.context
 
-    private val previewSize = context.resources.getInteger(R.integer.preview_size)
-    private val size = PreviewSizeCalculator().calculatePreviewSize(
+    private val previewSize = context.resources.getInteger(R.integer.album_preview_size)
+    private val size = PreviewSizeCalculator.calculatePreviewSize(
         context,
         previewSize
     )

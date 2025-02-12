@@ -65,12 +65,11 @@ class AlbumGridFragment : Fragment(R.layout.fragment_album_grid) {
     override fun onStart() {
         super.onStart()
 
-        val sizeCalculator = PreviewSizeCalculator()
-        val previewSize = resources.getInteger(R.integer.preview_size)
+        val previewSize = resources.getInteger(R.integer.album_preview_size)
 
         binding.rvAlbums.adapter = adapter
         binding.rvAlbums.layoutManager = StaggeredGridLayoutManager(
-            sizeCalculator.calculateColumnCount(requireContext(), previewSize),
+            PreviewSizeCalculator.calculateColumnCount(requireContext(), previewSize),
             RecyclerView.VERTICAL
         )
         binding.rvAlbums.addItemDecoration(PreviewGridItemDecoration())

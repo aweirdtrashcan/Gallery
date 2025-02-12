@@ -13,12 +13,11 @@ class ImageViewHolder(
 ): ViewHolder(imageBinding.root) {
 
     private val glide = Glide.with(imageBinding.root.context)
-    private val sizeCalculator = PreviewSizeCalculator()
 
     private val context = imageBinding.ivPreviewIconImage.context
-    private val size = sizeCalculator.calculatePreviewSize(
+    private val size = PreviewSizeCalculator.calculatePreviewSize(
         context,
-        context.resources.getInteger(R.integer.preview_size)
+        context.resources.getInteger(R.integer.media_preview_size)
     )
 
     fun bind(image: Image, onMediaClicked: (media: Media) -> Unit) {
