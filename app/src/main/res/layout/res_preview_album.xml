@@ -5,7 +5,7 @@
     android:layout_width="100dp"
     android:layout_height="100dp">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -16,7 +16,9 @@
         app:layout_constraintBottom_toTopOf="@id/album_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="@color/md_theme_secondary"
+        app:strokeWidth="@dimen/album_cardview_stroke_width">
 
         <ImageView
             android:id="@+id/iv_preview_icon_image"
@@ -24,7 +26,7 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <TextView
         android:id="@+id/album_name"

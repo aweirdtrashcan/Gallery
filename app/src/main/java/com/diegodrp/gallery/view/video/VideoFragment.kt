@@ -2,7 +2,6 @@ package com.diegodrp.gallery.view.video
 
 import android.os.Bundle
 import android.view.View
-import android.widget.MediaController
 import androidx.fragment.app.Fragment
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer

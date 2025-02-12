@@ -4,7 +4,7 @@
     android:layout_width="100dp"
     android:layout_height="100dp">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:outlineAmbientShadowColor="@android:color/transparent"
@@ -14,7 +14,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="@color/md_theme_secondary"
+        app:strokeWidth="@dimen/album_cardview_stroke_width">
 
         <ImageView
             android:id="@+id/iv_preview_icon_video"
@@ -22,15 +24,15 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
-        android:background="@color/black"
         app:cardBackgroundColor="#00000000"
-        app:cardCornerRadius="10dp"
+        android:outlineSpotShadowColor="#00000000"
+        app:cardCornerRadius="5dp"
         app:cardElevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -40,21 +42,23 @@
             android:layout_height="wrap_content"
             android:background="#90000000"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingHorizontal="5dp">
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/iv_preview_video_length"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_play_icon" />
 
             <TextView
                 android:id="@+id/tv_preview_video_length"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
                 android:text="1:00"
-                android:textAlignment="gravity" />
+                android:textAlignment="gravity"
+                android:textSize="12sp" />
 
         </LinearLayout>
 
