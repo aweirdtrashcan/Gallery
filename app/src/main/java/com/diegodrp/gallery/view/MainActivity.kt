@@ -12,6 +12,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.diegodrp.gallery.databinding.ActivityMainBinding
 import com.diegodrp.gallery.extensions.hasPermission
 import com.diegodrp.gallery.extensions.viewBinding
+import com.diegodrp.gallery.helpers.Permission
 import com.diegodrp.gallery.helpers.ReadImages
 import com.diegodrp.gallery.helpers.ReadVideos
 import com.diegodrp.gallery.view.permission.PermissionActivity
@@ -49,28 +50,10 @@ class MainActivity : PermissionActivity() {
         super.onStart()
 
         setupActionBar()
+    }
 
-        if (!hasPermission(ReadImages)) {
-            showPermissionDialog(ReadImages) {
-                handlePermission(ReadImages) { isGranted: Boolean ->
-                    if (isGranted) {
-                        Toast.makeText(this@MainActivity, "Permission granted", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                }
-            }
-        }
-
-        if (!hasPermission(ReadVideos)) {
-            showPermissionDialog(ReadVideos) {
-                handlePermission(ReadVideos) { isGranted: Boolean ->
-                    if (isGranted) {
-                        Toast.makeText(this@MainActivity, "Permission granted", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                }
-            }
-        }
+    override fun onStop() {
+        super.onStop()
     }
 
     private fun setupActionBar() {

@@ -1,5 +1,7 @@
 package com.diegodrp.gallery.helpers
 
+import android.Manifest
+
 const val PERMISSION_READ_STORAGE = 1
 const val PERMISSION_WRITE_STORAGE = 2
 const val PERMISSION_READ_IMAGES = 3
@@ -8,6 +10,11 @@ const val PERMISSION_READ_VIDEOS = 4
 interface Permission {
     fun getId(): Int
     fun getMessage(): String
+}
+
+object UnknownPermission : Permission {
+    override fun getId(): Int = 0
+    override fun getMessage(): String = "Unknown Permission"
 }
 
 object ReadStorage: Permission {
@@ -44,4 +51,20 @@ object ReadVideos: Permission {
         return "Permission for Reading Videos are required for your videos to be shown in the grid. " +
                 "Rejecting this permission will make the app unusable."
     }
+}
+
+fun getPermissionString(id: Int) = when (id) {
+    PERMISSION_READ_STORAGE -> Manifest.permission.READ_EXTERNAL_STORAGE
+    PERMISSION_WRITE_STORAGE -> Manifest.permission.WRITE_EXTERNAL_STORAGE
+    PERMISSION_READ_IMAGES -> if (isTiramisuPlus()) Manifest.permission.READ_MEDIA_IMAGES else ""
+    PERMISSION_READ_VIDEOS -> if (isTiramisuPlus()) Manifest.permission.READ_MEDIA_VIDEO else ""
+    else -> ""
+}
+
+fun getPermissionFromString(permission: String): Permission? = when (permission) {
+    Manifest.permission.READ_EXTERNAL_STORAGE -> ReadStorage
+    Manifest.permission.WRITE_EXTERNAL_STORAGE -> WriteStorage
+    Manifest.permission.READ_MEDIA_IMAGES -> if (isTiramisuPlus()) ReadImages else null
+    Manifest.permission.READ_MEDIA_VIDEO -> if (isTiramisuPlus()) ReadVideos else null
+    else -> null
 }

@@ -10,9 +10,9 @@ import androidx.core.database.getStringOrNull
 import com.diegodrp.gallery.R
 import com.diegodrp.gallery.exception.ImageLoadException
 import com.diegodrp.gallery.exception.VideoLoadException
-import com.diegodrp.gallery.extensions.isQPlus
 import com.diegodrp.gallery.helpers.Resource
 import com.diegodrp.gallery.helpers.StringResolver
+import com.diegodrp.gallery.helpers.isQPlus
 import com.diegodrp.gallery.model.Album
 import com.diegodrp.gallery.model.Image
 import com.diegodrp.gallery.model.Video

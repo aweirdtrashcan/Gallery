@@ -12,9 +12,16 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.diegodrp.gallery.R
 import com.diegodrp.gallery.databinding.FragmentAlbumGridBinding
+import com.diegodrp.gallery.extensions.hasPermission
+import com.diegodrp.gallery.helpers.Permission
 import com.diegodrp.gallery.helpers.PreviewGridItemDecoration
 import com.diegodrp.gallery.helpers.PreviewSizeCalculator
+import com.diegodrp.gallery.helpers.ReadImages
+import com.diegodrp.gallery.helpers.ReadVideos
+import com.diegodrp.gallery.helpers.isTiramisuPlus
 import com.diegodrp.gallery.model.Album
+import com.diegodrp.gallery.view.permission.PermissionActivity
+import com.diegodrp.gallery.view.permission.showPermissionDialog
 import com.diegodrp.gallery.viewmodel.album.AlbumEvent
 import com.diegodrp.gallery.viewmodel.album.AlbumViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,6 +38,9 @@ class AlbumGridFragment : Fragment(R.layout.fragment_album_grid) {
     private val adapter by lazy {
         AlbumGridAdapter(this::onAlbumClicked)
     }
+
+    private var hasReadImages = false
+    private var hasReadVideos = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -65,6 +75,8 @@ class AlbumGridFragment : Fragment(R.layout.fragment_album_grid) {
     override fun onStart() {
         super.onStart()
 
+        handlePermissions()
+
         val previewSize = resources.getInteger(R.integer.album_preview_size)
 
         binding.rvAlbums.adapter = adapter
@@ -73,7 +85,51 @@ class AlbumGridFragment : Fragment(R.layout.fragment_album_grid) {
             RecyclerView.VERTICAL
         )
         binding.rvAlbums.addItemDecoration(PreviewGridItemDecoration())
-        vm.onEvent(AlbumEvent.LoadImages)
+    }
+
+    private fun handlePermissions() {
+        val permissionToRequest = mutableListOf<Permission>()
+
+        (activity as PermissionActivity?)?.let { activity ->
+            with(activity) {
+                if (isTiramisuPlus()) {
+                    if (!hasPermission(ReadImages)) {
+                        permissionToRequest.add(ReadImages)
+                    } else {
+                        hasReadImages = true
+                    }
+
+                    if (!hasPermission(ReadVideos)) {
+                        permissionToRequest.add(ReadVideos)
+                    } else {
+                        hasReadVideos = true
+                    }
+                } else {
+                    /* TODO: Old Android permissions */
+                }
+
+                activity.handlePermissions(
+                    permissionToRequest,
+                    this@AlbumGridFragment::permissionsResultCallback
+                )
+
+                checkPermissionsAreGranted()
+            }
+        }
+    }
+
+    private fun permissionsResultCallback(permission: Permission, isGranted: Boolean) {
+        when (permission) {
+            is ReadVideos -> hasReadVideos = isGranted
+            is ReadImages -> hasReadImages = isGranted
+        }
+        checkPermissionsAreGranted()
+    }
+
+    private fun checkPermissionsAreGranted() {
+        if (hasReadImages && hasReadVideos) {
+            vm.onEvent(AlbumEvent.LoadImages)
+        }
     }
 
     private fun onAlbumClicked(album: Album) {

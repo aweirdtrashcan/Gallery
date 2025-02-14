@@ -1,37 +1,70 @@
 package com.diegodrp.gallery.view.permission
 
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.diegodrp.gallery.extensions.getPermissionString
 import com.diegodrp.gallery.extensions.hasPermission
 import com.diegodrp.gallery.helpers.Permission
+import com.diegodrp.gallery.helpers.UnknownPermission
+import com.diegodrp.gallery.helpers.getPermissionFromString
+import com.diegodrp.gallery.helpers.getPermissionString
+import com.diegodrp.gallery.viewmodel.permission.PermissionViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-abstract class PermissionActivity: AppCompatActivity() {
+typealias PermissionResult = (permission: Permission, isGranted: Boolean) -> Unit
 
-    private var actionOnPermission: ((isGranted: Boolean) -> Unit)? = null
+@AndroidEntryPoint
+abstract class PermissionActivity : AppCompatActivity() {
+
+    private var permissionResultCallback: PermissionResult? = null
     private var isAskingPermission = false
+    private val vm by viewModels<PermissionViewModel>()
 
-    fun handlePermission(permission: Permission, callback: (isGranted: Boolean) -> Unit) {
-        actionOnPermission = null
-        if (hasPermission(permission)) callback(true)
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        for (permission in permissions) {
+            permissionResultCallback?.invoke(
+                getPermissionFromString(permission.key) ?: UnknownPermission,
+                permission.value
+            )
+        }
+    }
+
+    fun handlePermission(permission: Permission, callback: PermissionResult) {
+        if (hasPermission(permission)) callback(permission, true)
         else {
             isAskingPermission = true
-            actionOnPermission = callback
-            ActivityCompat.requestPermissions(this, arrayOf(getPermissionString(permission.getId())), 1)
+            permissionResultCallback = callback
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(getPermissionString(permission.getId())),
+                1
+            )
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-        deviceId: Int
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
-        isAskingPermission = false
-        if (requestCode == 1 && permissions.isNotEmpty()) {
-            actionOnPermission?.invoke(grantResults[0] == 0)
+    fun handlePermissions(permissions: List<Permission>, callback: PermissionResult) {
+        val permissionsToRequest = mutableListOf<Permission>()
+
+        permissions.forEach { perm ->
+            if (hasPermission(perm)) {
+                callback(perm, true)
+            } else {
+                permissionsToRequest.add(perm)
+            }
+        }
+
+        if (permissionsToRequest.isNotEmpty()) {
+            isAskingPermission = true
+            vm.addPermissions(permissions) {
+                permissionResultCallback = callback
+                permissionLauncher.launch(
+                    permissionsToRequest.map { getPermissionString(it.getId()) }.toTypedArray()
+                )
+            }
+            vm.showDialogs(this)
         }
     }
-
 }

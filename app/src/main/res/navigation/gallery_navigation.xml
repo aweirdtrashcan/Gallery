@@ -15,10 +15,10 @@
             app:argType="string" />
         <action
             android:id="@+id/to_image_fragment"
-            app:destination="@id/image_fragment" />
+            app:destination="@id/imageFragment" />
         <action
             android:id="@+id/to_video_fragment"
-            app:destination="@id/video_fragment" />
+            app:destination="@id/videoFragment" />
     </fragment>
 
     <fragment
@@ -36,7 +36,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/image_fragment"
+        android:id="@+id/imageFragment"
         android:name="com.diegodrp.gallery.view.image.ImageFragment"
         tools:layout="@layout/fragment_image">
         <argument
@@ -45,7 +45,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/video_fragment"
+        android:id="@+id/videoFragment"
         android:name="com.diegodrp.gallery.view.video.VideoFragment"
         tools:layout="@layout/fragment_video">
         <argument
