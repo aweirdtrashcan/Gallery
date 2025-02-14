@@ -1,11 +1,7 @@
 package com.diegodrp.gallery.viewmodel.permission
 
-import android.app.Application
-import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.diegodrp.gallery.helpers.Permission
-import com.diegodrp.gallery.view.permission.showPermissionDialog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -20,7 +16,7 @@ class PermissionViewModel @Inject constructor() : ViewModel() {
         permissionDialogs.add(permissionWithCallback)
     }
 
-    fun showDialogs(context: Context) {
+    fun showDialogs(showDialogCallback: (permission: Permission, onDismiss: () -> Unit) -> Unit) {
         val permissionWithCallback = permissionDialogs.getOrNull(permissionDialogs.lastIndex) ?: return
 
         permissionDialogs.remove(permissionWithCallback)
@@ -32,7 +28,7 @@ class PermissionViewModel @Inject constructor() : ViewModel() {
         var permissionsDismissed = 0
 
         for (permission in permissions) {
-            context.showPermissionDialog(permission) {
+            showDialogCallback(permission) {
                 permissionsDismissed++
                 if (permissionsDismissed == totalPermissions) {
                     onAllDialogsDismissed()

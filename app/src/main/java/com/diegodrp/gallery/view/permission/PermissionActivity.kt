@@ -25,23 +25,12 @@ abstract class PermissionActivity : AppCompatActivity() {
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         for (permission in permissions) {
-            permissionResultCallback?.invoke(
-                getPermissionFromString(permission.key) ?: UnknownPermission,
-                permission.value
-            )
-        }
-    }
-
-    fun handlePermission(permission: Permission, callback: PermissionResult) {
-        if (hasPermission(permission)) callback(permission, true)
-        else {
-            isAskingPermission = true
-            permissionResultCallback = callback
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(getPermissionString(permission.getId())),
-                1
-            )
+            if (permission.value) {
+                permissionResultCallback?.invoke(
+                    getPermissionFromString(permission.key) ?: UnknownPermission,
+                    permission.value
+                )
+            }
         }
     }
 
@@ -64,7 +53,9 @@ abstract class PermissionActivity : AppCompatActivity() {
                     permissionsToRequest.map { getPermissionString(it.getId()) }.toTypedArray()
                 )
             }
-            vm.showDialogs(this)
+            vm.showDialogs { permission, onDismiss ->
+                showPermissionDialog(permission, onDismiss)
+            }
         }
     }
 }
